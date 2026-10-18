@@ -25,9 +25,21 @@ main {
 
 .timer-panel {
     display: flex;
-    align-items: center;
+    align-items: stretch;
     gap: 15px;
-    margin-bottom: 15px;
+}
+
+.control-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;  /* Keeps buttons aligned w/ bottom of timer */
+    gap: 15px;      /* space BETWEEN items, not befor the first or after the last */
+}
+
+.toolbar {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
 .panel-background {
@@ -38,8 +50,10 @@ main {
 
 /* #timer and #mode share the information form .panel-background */
 #timer {
+    display: flex;
     font-size: 6rem;
     font-variant-numeric: lining-nums tabular-nums;
+    align-items: center;
 }
 
 #mode {
@@ -48,30 +62,18 @@ main {
     min-width: 9ch;
 }
 
-.toolbar {
-    display: flex;
-    gap: 15px;      /* space BETWEEN items, not befor the first or after the last */
-}
-
 button {
     font: inherit;
     padding: 5px 15px;
     cursor: pointer;            /* Turns mouse into finger when hovering over button*/
-    border-radius: 100px;       /* Rounds the corners of the buttons */
+    border-radius: 10px;       /* Rounds the corners of the buttons */
     border: 1px solid black;
-    /* border: none; */
 }
 
-#start-btn {
+#start-pause-btn {
     background-color: rgb(52, 226, 52);
-}
-
-#pause-btn {
-    background-color: lightgray;
 }
 
 #reset-btn {
     background-color: rgb(255, 54, 54);
 }
-
-

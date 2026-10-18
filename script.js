@@ -9,8 +9,7 @@ timerElement.textContent = formatTime(WORK_SECONDS);
 // timerElement.textContent = "01:23";
 
 const modeElement = document.querySelector("#mode");
-const startButton = document.querySelector("#start-btn");
-const pauseButton = document.querySelector("#pause-btn");
+const startPauseButton = document.querySelector("#start-pause-btn");
 const resetButton = document.querySelector("#reset-btn");
 
 function handleStart() {
@@ -29,8 +28,7 @@ function handleReset() {
     modeElement.textContent = "Work";
 }
 
-startButton.addEventListener("click", handleStart);
-pauseButton.addEventListener("click", handlePause);
+startPauseButton.addEventListener("click", handleStart);
 resetButton.addEventListener("click", handleReset);
 
 function formatTime(totalSeconds) {
