@@ -1,3 +1,4 @@
+/* === Page: === */
 body {
     /* Layout: */
     display: flex;
@@ -5,16 +6,20 @@ body {
     justify-content: center;
     align-items: center;
 
+    /* Box (size & spacing): */
     min-height: 100vh;      /* 100vh = full window height (100%) */
     margin: 0;              /* Removes scroll bar by overriding default margin */
     
+    /* Typography: */
     font-family: Georgia, 'Times New Roman', Times, serif;
     
+    /* Color: */
     background-color: gray;
     color: yellow; /* Changes text color */
 }
 
 main {
+    /* Layout: */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -23,57 +28,79 @@ main {
     /* text-align: center;   */
 }
 
+/* === Panel Layouts: === */
 .timer-panel {
+    /* Layout: */
     display: flex;
-    align-items: stretch;
+    align-items: stretch;  /* Keeps timer aligned with control-panel */
     gap: 15px;
 }
 
 .control-panel {
+    /* Layout: */
     display: flex;
     flex-direction: column;
     justify-content: space-between;  /* Keeps buttons aligned w/ bottom of timer */
-    gap: 15px;      /* space BETWEEN items, not befor the first or after the last */
+    gap: 15px;      /* space BETWEEN items, not before the first or after the last */
 }
 
 .toolbar {
+    /* Layout: */
     display: flex;
     flex-direction: column;
     gap: 15px;
 }
 
 .panel-background {
-    background-color: rgba(0, 0, 0, 0.5);
+    /* Box (size & spacing): */
     margin: 0;
     padding: 15px;
+
+    /* Color: */
+    background-color: rgba(0, 0, 0, 0.5);
 }
 
-/* #timer and #mode share the information form .panel-background */
+/* === Timer Display: === */
+/* #timer and #mode share the information from .panel-background */
 #timer {
+    /* Layout: */
     display: flex;
+    align-items: center;
+
+    /* Typography: */
     font-size: 6rem;
     font-variant-numeric: lining-nums tabular-nums;
-    align-items: center;
 }
 
 #mode {
-    font-size: 1.5rem;
-    text-align: center;
+    /* Box (size & spacing): */
     min-width: 9ch;
+
+    /* Typography: */
+    font-size: 1.5rem;
+    text-align: center;  /* Typography bc it positions text inside a box, not boxes */
 }
 
+/* === Buttons: === */
 button {
-    font: inherit;
+    /* Box (size & spacing): */
     padding: 5px 15px;
-    cursor: pointer;            /* Turns mouse into finger when hovering over button*/
-    border-radius: 10px;       /* Rounds the corners of the buttons */
     border: 1px solid black;
+    border-radius: 10px;        /* Rounds the corners of the buttons */
+
+    /* Typography: */
+    font: inherit;
+    
+    /* Interaction: */
+    cursor: pointer;            /* Turns mouse into finger when hovering over button*/
 }
 
 #start-pause-btn {
+    /* Color: */
     background-color: rgb(52, 226, 52);
 }
 
 #reset-btn {
+    /* Color: */
     background-color: rgb(255, 54, 54);
 }
