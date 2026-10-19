@@ -1,35 +1,51 @@
 console.log("hello from script.js");
 
-const WORK_SECONDS = 25 * 60;
+// === Constants: ===
+const DEFAULT_SECONDS = 25 * 60;
 
-// --- getElementById vs querySelector: ---
+// === Element lookups: ===
 const timerElement = document.querySelector("#timer");      // Finds by id, class, element type, or combination
-timerElement.textContent = formatTime(WORK_SECONDS);
-// const timerElement = document.getElementById("timer");   // Older, faster, only finds by ID
-// timerElement.textContent = "01:23";
-
 const modeElement = document.querySelector("#mode");
 const startPauseButton = document.querySelector("#start-pause-btn");
 const resetButton = document.querySelector("#reset-btn");
 
-function handleStart() {
-    console.log("Start clicked");
-    modeElement.textContent = "Running";
+// Alternative: getElementById()
+// const timerElement = document.getElementById("timer");   // Older, faster, only finds by ID
+
+// === State: ===
+let remainingSeconds = DEFAULT_SECONDS;
+let isTimerRunning = false;
+let timerIntervalId = null;
+
+// === Functions: ===
+function tick() {
+    remainingSeconds -= 1;
+    render();
 }
 
-function handlePause() {
-    console.log("Pause clicked");
-    modeElement.textContent = "Paused";
+function startTimer() {
+    if (isTimerRunning) {
+        console.log("Timer is already running");
+        return;
+    }
+    console.log("Start clicked");
+    modeElement.textContent = "Running";
+    // if (timerIntervalId !== null) {
+    //     clearInterval(timerIntervalId);
+    // }
+    timerIntervalId = setInterval(tick, 1000);
+    isTimerRunning = true;
 }
 
 function handleReset() {
     console.log("Reset clicked");
-    timerElement.textContent = formatTime(WORK_SECONDS);
+    clearInterval(timerIntervalId);
+    timerIntervalId = null;
+    isTimerRunning = false;
+    remainingSeconds = DEFAULT_SECONDS;
     modeElement.textContent = "Work";
+    render();
 }
-
-startPauseButton.addEventListener("click", handleStart);
-resetButton.addEventListener("click", handleReset);
 
 function formatTime(totalSeconds) {
     const minutes = Math.floor(totalSeconds / 60);
@@ -41,3 +57,14 @@ function formatTime(totalSeconds) {
     
     return `${paddedMinutes}:${paddedSeconds}`;
 }
+
+function render() {
+    timerElement.textContent = formatTime(remainingSeconds);
+}
+
+// === Event listeners: ===
+startPauseButton.addEventListener("click", startTimer);
+resetButton.addEventListener("click", handleReset);
+
+// === Startup: ===
+render();
