@@ -95,6 +95,14 @@ button {
     cursor: pointer;            /* Turns mouse into finger when hovering over button*/
 }
 
+button:disabled {
+    /* Color: */
+    opacity: 0.5;
+
+    /* Interaction: */
+    cursor: not-allowed;
+}
+
 #start-pause-btn {
     /* Color: */
     background-color: rgb(52, 226, 52);

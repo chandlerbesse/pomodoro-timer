@@ -20,21 +20,43 @@ let timerIntervalId = null;
 // === Functions: ===
 function tick() {
     remainingSeconds -= 1;
+    if (remainingSeconds <= 0) {
+        clearInterval(timerIntervalId);
+        timerIntervalId = null;
+        isTimerRunning = false;
+    }
     render();
 }
 
 function startTimer() {
-    if (isTimerRunning) {
+    if (isTimerRunning || remainingSeconds <= 0) {
         console.log("Timer is already running");
         return;
     }
     console.log("Start clicked");
-    modeElement.textContent = "Running";
-    // if (timerIntervalId !== null) {
-    //     clearInterval(timerIntervalId);
-    // }
     timerIntervalId = setInterval(tick, 1000);
     isTimerRunning = true;
+    render();
+}
+
+function pauseTimer() {
+    if (!isTimerRunning) {
+        console.log("Timer is already paused");
+        return;
+    }
+    console.log("Pause clicked");
+    clearInterval(timerIntervalId);
+    timerIntervalId = null;  // Keeps state accurate
+    isTimerRunning = false;
+    render();
+}
+
+function handleStartPause() {
+    if (isTimerRunning) {
+        pauseTimer();
+    } else {
+        startTimer();
+    }
 }
 
 function handleReset() {
@@ -43,7 +65,6 @@ function handleReset() {
     timerIntervalId = null;
     isTimerRunning = false;
     remainingSeconds = DEFAULT_SECONDS;
-    modeElement.textContent = "Work";
     render();
 }
 
@@ -60,10 +81,20 @@ function formatTime(totalSeconds) {
 
 function render() {
     timerElement.textContent = formatTime(remainingSeconds);
+    modeElement.textContent = "Work";
+    startPauseButton.disabled = remainingSeconds <= 0;  // Disables "Start" button once timer hits 00:00
+
+    if (isTimerRunning) {
+        // timerElement.textContent = formatTime(remainingSeconds);
+        startPauseButton.textContent = "Pause";
+    } else {
+        // timerElement.textContent = "PAUSED"
+        startPauseButton.textContent = "Start";
+    }
 }
 
 // === Event listeners: ===
-startPauseButton.addEventListener("click", startTimer);
+startPauseButton.addEventListener("click", handleStartPause);
 resetButton.addEventListener("click", handleReset);
 
 // === Startup: ===
