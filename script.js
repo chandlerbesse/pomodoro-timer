@@ -1,37 +1,72 @@
 console.log("hello from script.js");
 
-const WORK_SECONDS = 25 * 60;
+// === Constants: ===
+const DEFAULT_SECONDS = 25 * 60;
 
-// --- getElementById vs querySelector: ---
+// === Element lookups: ===
 const timerElement = document.querySelector("#timer");      // Finds by id, class, element type, or combination
-timerElement.textContent = formatTime(WORK_SECONDS);
-// const timerElement = document.getElementById("timer");   // Older, faster, only finds by ID
-// timerElement.textContent = "01:23";
-
 const modeElement = document.querySelector("#mode");
-const startButton = document.querySelector("#start-btn");
-const pauseButton = document.querySelector("#pause-btn");
+const startPauseButton = document.querySelector("#start-pause-btn");
 const resetButton = document.querySelector("#reset-btn");
 
-function handleStart() {
-    console.log("Start clicked");
-    modeElement.textContent = "Running";
+// Alternative: getElementById()
+// const timerElement = document.getElementById("timer");   // Older, faster, only finds by ID
+
+// === State: ===
+let remainingSeconds = DEFAULT_SECONDS;
+let isTimerRunning = false;
+let timerIntervalId = null;
+
+// === Functions: ===
+function tick() {
+    remainingSeconds -= 1;
+    if (remainingSeconds <= 0) {
+        clearInterval(timerIntervalId);
+        timerIntervalId = null;
+        isTimerRunning = false;
+    }
+    render();
 }
 
-function handlePause() {
+function startTimer() {
+    if (isTimerRunning || remainingSeconds <= 0) {
+        // console.log("Timer is already running");
+        return;
+    }
+    console.log("Start clicked");
+    timerIntervalId = setInterval(tick, 1000);
+    isTimerRunning = true;
+    render();
+}
+
+function pauseTimer() {
+    if (!isTimerRunning) {
+        console.log("Timer is already paused");
+        return;
+    }
     console.log("Pause clicked");
-    modeElement.textContent = "Paused";
+    clearInterval(timerIntervalId);
+    timerIntervalId = null;  // Keeps state accurate
+    isTimerRunning = false;
+    render();
+}
+
+function handleStartPause() {
+    if (isTimerRunning) {
+        pauseTimer();
+    } else {
+        startTimer();
+    }
 }
 
 function handleReset() {
     console.log("Reset clicked");
-    timerElement.textContent = formatTime(WORK_SECONDS);
-    modeElement.textContent = "Work";
+    clearInterval(timerIntervalId);
+    timerIntervalId = null;
+    isTimerRunning = false;
+    remainingSeconds = DEFAULT_SECONDS;
+    render();
 }
-
-startButton.addEventListener("click", handleStart);
-pauseButton.addEventListener("click", handlePause);
-resetButton.addEventListener("click", handleReset);
 
 function formatTime(totalSeconds) {
     const minutes = Math.floor(totalSeconds / 60);
@@ -43,3 +78,28 @@ function formatTime(totalSeconds) {
     
     return `${paddedMinutes}:${paddedSeconds}`;
 }
+
+function render() {
+    const isPaused = 0 < remainingSeconds && remainingSeconds < DEFAULT_SECONDS && !isTimerRunning;
+    const isFinished = remainingSeconds <= 0;
+
+    timerElement.classList.toggle("is-paused", isPaused);
+    timerElement.classList.toggle("is-finished", isFinished);
+
+    timerElement.textContent = formatTime(remainingSeconds);
+    modeElement.textContent = "Work";
+    startPauseButton.disabled = isFinished;  // Disables "Start" button once timer hits 00:00
+
+    if (isTimerRunning) {
+        startPauseButton.textContent = "Pause";
+    } else {
+        startPauseButton.textContent = "Start";
+    }
+}
+
+// === Event listeners: ===
+startPauseButton.addEventListener("click", handleStartPause);
+resetButton.addEventListener("click", handleReset);
+
+// === Startup: ===
+render();
