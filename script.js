@@ -30,7 +30,7 @@ function tick() {
 
 function startTimer() {
     if (isTimerRunning || remainingSeconds <= 0) {
-        console.log("Timer is already running");
+        // console.log("Timer is already running");
         return;
     }
     console.log("Start clicked");
@@ -80,15 +80,19 @@ function formatTime(totalSeconds) {
 }
 
 function render() {
+    const isPaused = 0 < remainingSeconds && remainingSeconds < DEFAULT_SECONDS && !isTimerRunning;
+    const isFinished = remainingSeconds <= 0;
+
+    timerElement.classList.toggle("is-paused", isPaused);
+    timerElement.classList.toggle("is-finished", isFinished);
+
     timerElement.textContent = formatTime(remainingSeconds);
     modeElement.textContent = "Work";
-    startPauseButton.disabled = remainingSeconds <= 0;  // Disables "Start" button once timer hits 00:00
+    startPauseButton.disabled = isFinished;  // Disables "Start" button once timer hits 00:00
 
     if (isTimerRunning) {
-        // timerElement.textContent = formatTime(remainingSeconds);
         startPauseButton.textContent = "Pause";
     } else {
-        // timerElement.textContent = "PAUSED"
         startPauseButton.textContent = "Start";
     }
 }

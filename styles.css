@@ -72,6 +72,15 @@ main {
     font-variant-numeric: lining-nums tabular-nums;
 }
 
+@keyframes blink {
+    50% {color: transparent; } /* Makes text invisible */
+}
+
+#timer.is-paused,
+#timer.is-finished {
+    animation: blink 1.5s step-end infinite;
+}
+
 #mode {
     /* Box (size & spacing): */
     min-width: 9ch;
