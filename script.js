@@ -28,7 +28,7 @@ function tick() {
         clearInterval(timerIntervalId);
         timerIntervalId = null;
         isTimerRunning = false;
-        remainingMilliseconds = 0;
+        remainingMilliseconds = 0;  // Protects formatTime() from negative values
     }
     render();
 }
@@ -50,12 +50,12 @@ function pauseTimer() {
         console.log("Timer is already paused");
         return;
     }
-    remainingMilliseconds = timerEndsAt - Date.now();  // Idk if this is necessary
+    remainingMilliseconds = timerEndsAt - Date.now();  // Spamming "Pause" button will keep updating remainingMilliseconds
     console.log("Pause clicked");
     clearInterval(timerIntervalId);
     timerIntervalId = null;  // Keeps state accurate
     isTimerRunning = false;
-    timerEndsAt = null;  // Idk if this is necessary
+    timerEndsAt = null;  // While paused, there is no end time. A new end time will need to be calculated once unpaused
     render();
 }
 
@@ -92,6 +92,7 @@ function formatTime(totalSeconds) {
 
 function render() {
     const remainingSeconds = Math.ceil( remainingMilliseconds / 1000);
+    const formattedTime = formatTime(remainingSeconds)
     // const isPaused = 0 < remainingSeconds && remainingSeconds < DEFAULT_SECONDS && !isTimerRunning;
     // const isFinished = remainingSeconds <= 0;
     const isPaused = 0 < remainingMilliseconds && remainingMilliseconds < DEFAULT_MS && !isTimerRunning;
@@ -100,11 +101,22 @@ function render() {
     timerElement.classList.toggle("is-paused", isPaused);
     timerElement.classList.toggle("is-finished", isFinished);
 
-    timerElement.textContent = formatTime(remainingSeconds);
-    // timerElement.textContent = formatTime(remainingMilliseconds);
+    timerElement.textContent = formattedTime;
     modeElement.textContent = "Work";
     startPauseButton.disabled = isFinished;  // Disables "Start" button once timer hits 00:00
 
+    // Tab Title:
+    if (isTimerRunning) {
+        document.title = `Running: ${formattedTime}`
+    } else if (isPaused) {
+        document.title = `Paused: ${formattedTime}`
+    } else if (isFinished) {
+        document.title = `Finished: ${formattedTime}`
+    } else {
+        document.title = 'Pomodoro Timer'
+    }
+
+    // Button Labels:
     if (isTimerRunning) {
         startPauseButton.textContent = "Pause";
     } else {
