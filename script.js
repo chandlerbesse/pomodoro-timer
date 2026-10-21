@@ -151,6 +151,7 @@ function render() {
 
     timerElement.textContent = formattedTime;
     modeElement.textContent = MODES[currentMode].label;
+    document.body.dataset.mode = currentMode;  // for per-mode CSS (themes)
     startPauseButton.disabled = isFinished;  // Disables "Start" button once timer hits 00:00
 
     // Tab Title:
