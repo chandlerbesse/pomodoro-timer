@@ -21,12 +21,17 @@ const resetButton = document.querySelector("#reset-btn");
 let currentMode = "focus";
 let remainingMilliseconds = MODES[currentMode].durationMs;
 let timerEndsAt = null;
-let isTimerRunning = false;
+let timerStatus = "idle";
 let timerIntervalId = null;
 
 // let prevTick = null // TEMP for testing
 
 // === Functions: ===
+function stopTicking() {
+    clearInterval(timerIntervalId);
+    timerIntervalId = null;
+}
+
 function tick() {
     // // Testing
     // const startTick = Date.now()  // TEMP
@@ -35,41 +40,38 @@ function tick() {
 
     remainingMilliseconds = timerEndsAt - Date.now();
     if (remainingMilliseconds <= 0) {
-        clearInterval(timerIntervalId);
-        timerIntervalId = null;
-        isTimerRunning = false;
+        stopTicking();
+        timerStatus = "finished";
         remainingMilliseconds = 0;  // Protects formatTime() from negative values
     }
     render();
 }
 
 function startTimer() {
-    if (isTimerRunning || remainingMilliseconds <= 0) {
+    if (timerStatus !== "idle" && timerStatus !== "paused") {
         return;
     }
     timerEndsAt = Date.now() + remainingMilliseconds;
     console.log("Start clicked");
     timerIntervalId = setInterval(tick, 1000);
-    isTimerRunning = true;
+    timerStatus = "running";
     render();
 }
 
 function pauseTimer() {
-    if (!isTimerRunning) {
-        console.log("Timer is already paused");
+    if (timerStatus !== "running") {
         return;
     }
     remainingMilliseconds = timerEndsAt - Date.now();  // Spamming "Pause" button will keep updating remainingMilliseconds
     console.log("Pause clicked");
-    clearInterval(timerIntervalId);
-    timerIntervalId = null;  // Keeps state accurate
-    isTimerRunning = false;
+    stopTicking();
+    timerStatus = "paused";
     timerEndsAt = null;  // While paused, there is no end time. A new end time will need to be calculated once unpaused
     render();
 }
 
 function handleStartPause() {
-    if (isTimerRunning) {
+    if (timerStatus === "running") {
         pauseTimer();
     } else {
         startTimer();
@@ -78,16 +80,15 @@ function handleStartPause() {
 
 function handleReset() {
     console.log("Reset clicked");
-    clearInterval(timerIntervalId);
-    timerIntervalId = null;
-    isTimerRunning = false;
+    stopTicking();
+    timerStatus = "idle";
     remainingMilliseconds = MODES[currentMode].durationMs;
     timerEndsAt = null;
     render();
 }
 
 function handleVisibilityChange() {
-    if (!document.hidden && isTimerRunning) {
+    if (!document.hidden && timerStatus === "running") {
         tick();
     }
 }
@@ -106,8 +107,8 @@ function formatTime(totalSeconds) {
 function render() {
     const remainingSeconds = Math.ceil(remainingMilliseconds / 1000);
     const formattedTime = formatTime(remainingSeconds);
-    const isPaused = 0 < remainingMilliseconds && remainingMilliseconds < MODES[currentMode].durationMs && !isTimerRunning;
-    const isFinished = remainingMilliseconds <= 0;
+    const isPaused = timerStatus === "paused"
+    const isFinished = timerStatus === "finished"
 
     timerElement.classList.toggle("is-paused", isPaused);
     timerElement.classList.toggle("is-finished", isFinished);
@@ -117,7 +118,7 @@ function render() {
     startPauseButton.disabled = isFinished;  // Disables "Start" button once timer hits 00:00
 
     // Tab Title:
-    if (isTimerRunning) {
+    if (timerStatus === "running") {
         document.title = `Running: ${formattedTime}`;
     } else if (isPaused) {
         document.title = `Paused: ${formattedTime}`;
@@ -128,7 +129,7 @@ function render() {
     }
 
     // Button Labels:
-    if (isTimerRunning) {
+    if (timerStatus === "running") {
         startPauseButton.textContent = "Pause";
     } else {
         startPauseButton.textContent = "Start";
