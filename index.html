@@ -15,8 +15,16 @@
             <p id="timer" class="panel-background">25:00</p>
 
             <div class="control-panel">
-                <p id="mode" class="panel-background">Focus</p>
 
+                <div class="mode-selector">
+                    <button type="button" id="prev-mode-btn">&lt;</button>
+                    <div class="mode-display panel-background">
+                        <p id="mode">Focus</p>
+                        <p id="cycle-dots"></p>
+                    </div>
+                    <button type="button" id="next-mode-btn">&gt;</button>
+                </div>
+                
                 <div class="toolbar">
                     <button type="button" id="start-pause-btn">Start</button>
                     <button type="button" id="reset-btn">Reset</button>

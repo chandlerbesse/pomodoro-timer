@@ -44,6 +44,11 @@ main {
     gap: 15px;      /* space BETWEEN items, not before the first or after the last */
 }
 
+.mode-selector {
+    display: flex;
+    flex-direction: row;
+}
+
 .toolbar {
     /* Layout: */
     display: flex;
@@ -60,15 +65,30 @@ main {
     background-color: rgba(0, 0, 0, 0.5);
 }
 
+.mode-display {
+    /* Layout: */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    /* Box (size & spacing): */
+    padding: 15px 0;  /* below .panel-background so this padding wins*/
+    width: 13ch;
+
+    /* Typography: */
+    text-align: center;  /* Typography bc it positions text inside a box, not boxes */
+    font-size: 1.5rem;
+}
+
 /* === Timer Display: === */
-/* #timer and #mode share the information from .panel-background */
+/* .mode-display and #timer share the information from .panel-background */
 #timer {
     /* Layout: */
     display: flex;
     align-items: center;
 
     /* Typography: */
-    font-size: 6rem;
+    font-size: 6.5rem;
     font-variant-numeric: lining-nums tabular-nums;
 }
 
@@ -81,13 +101,10 @@ main {
     animation: blink 1.5s step-end infinite;
 }
 
-#mode {
+#mode,
+#cycle-dots {
     /* Box (size & spacing): */
-    min-width: 9ch;
-
-    /* Typography: */
-    font-size: 1.5rem;
-    text-align: center;  /* Typography bc it positions text inside a box, not boxes */
+    margin: 0;  /* Removing default margin from browser */
 }
 
 /* === Buttons: === */
@@ -120,4 +137,15 @@ button:disabled {
 #reset-btn {
     /* Color: */
     background-color: rgb(255, 54, 54);
+}
+
+#prev-mode-btn,
+#next-mode-btn {
+    /* Box (size & spacing): */
+    min-width: 44px;
+    border-radius: 0;
+
+    /* Color: */
+    background-color: rgba(0, 0, 0, 0.5);
+    color: yellow;
 }
