@@ -1,7 +1,12 @@
 console.log("hello from script.js");
 
 // === Constants: ===
-const DEFAULT_MS = 25 * 60 * 1000;
+const MODE_ORDER = ["focus", "short-break", "long-break"];
+const MODES = {
+    focus: { label: "Focus", durationMs: 25 * 60 * 1000},
+    "short-break": { label: "Short Break", durationMs: 5 * 60 * 1000 },
+    "long-break": { label: "Long Break", durationMs: 15 * 60 * 1000 },
+};
 
 // === Element lookups: ===
 const timerElement = document.querySelector("#timer");      // Finds by id, class, element type, or combination
@@ -13,7 +18,8 @@ const resetButton = document.querySelector("#reset-btn");
 // const timerElement = document.getElementById("timer");   // Older, faster, only finds by ID
 
 // === State: ===
-let remainingMilliseconds = DEFAULT_MS;
+let currentMode = "focus";
+let remainingMilliseconds = MODES[currentMode].durationMs;
 let timerEndsAt = null;
 let isTimerRunning = false;
 let timerIntervalId = null;
@@ -75,7 +81,7 @@ function handleReset() {
     clearInterval(timerIntervalId);
     timerIntervalId = null;
     isTimerRunning = false;
-    remainingMilliseconds = DEFAULT_MS;
+    remainingMilliseconds = MODES[currentMode].durationMs;
     timerEndsAt = null;
     render();
 }
@@ -100,14 +106,14 @@ function formatTime(totalSeconds) {
 function render() {
     const remainingSeconds = Math.ceil(remainingMilliseconds / 1000);
     const formattedTime = formatTime(remainingSeconds);
-    const isPaused = 0 < remainingMilliseconds && remainingMilliseconds < DEFAULT_MS && !isTimerRunning;
+    const isPaused = 0 < remainingMilliseconds && remainingMilliseconds < MODES[currentMode].durationMs && !isTimerRunning;
     const isFinished = remainingMilliseconds <= 0;
 
     timerElement.classList.toggle("is-paused", isPaused);
     timerElement.classList.toggle("is-finished", isFinished);
 
     timerElement.textContent = formattedTime;
-    modeElement.textContent = "Work";
+    modeElement.textContent = MODES[currentMode].label;
     startPauseButton.disabled = isFinished;  // Disables "Start" button once timer hits 00:00
 
     // Tab Title:
