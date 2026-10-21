@@ -13,6 +13,8 @@ const timerElement = document.querySelector("#timer");      // Finds by id, clas
 const modeElement = document.querySelector("#mode");
 const startPauseButton = document.querySelector("#start-pause-btn");
 const resetButton = document.querySelector("#reset-btn");
+const prevModeButton = document.querySelector("#prev-mode-btn");
+const nextModeButton = document.querySelector("#next-mode-btn");
 
 // Alternative: getElementById()
 // const timerElement = document.getElementById("timer");   // Older, faster, only finds by ID
@@ -89,6 +91,13 @@ function handleStartPause() {
 
 function handleReset() {
     console.log("Reset clicked");
+    
+    const isActive = timerStatus === "running" || timerStatus === "paused";
+
+    if (isActive && !confirm("Abandon this session?")) {
+        return;
+    }
+
     switchMode(currentMode);
 }
 
@@ -107,6 +116,28 @@ function formatTime(totalSeconds) {
     const paddedSeconds = String(seconds).padStart(2, "0");
     
     return `${paddedMinutes}:${paddedSeconds}`;
+}
+
+function changeModeBy(step) {
+    const isActive = timerStatus === "running" || timerStatus === "paused";
+
+    if (isActive && !confirm("Abandon this session?")) {
+        return;
+    }
+
+    const numModes = MODE_ORDER.length;
+    const currentIndex = MODE_ORDER.indexOf(currentMode);
+    const newIndex = (currentIndex + step + numModes) % numModes;
+
+    switchMode(MODE_ORDER[newIndex]);
+}
+
+function handleNextMode() {
+    changeModeBy(1);
+}
+
+function handlePrevMode() {
+    changeModeBy(-1);
 }
 
 function render() {
@@ -145,6 +176,8 @@ function render() {
 startPauseButton.addEventListener("click", handleStartPause);
 resetButton.addEventListener("click", handleReset);
 document.addEventListener("visibilitychange", handleVisibilityChange);
+prevModeButton.addEventListener("click", handlePrevMode);
+nextModeButton.addEventListener("click", handleNextMode);
 
 // === Startup: ===
 render();
