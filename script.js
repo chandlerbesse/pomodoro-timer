@@ -3,7 +3,7 @@ console.log("hello from script.js");
 // === Constants: ===
 const MODE_ORDER = ["focus", "short-break", "long-break"];
 const MODES = {
-    focus: { label: "Focus", durationMs: 25 * 60 * 1000},
+    focus: { label: "Focus", durationMs: 25 * 60 * 1000 },
     "short-break": { label: "Short Break", durationMs: 5 * 60 * 1000 },
     "long-break": { label: "Long Break", durationMs: 15 * 60 * 1000 },
 };
@@ -30,6 +30,15 @@ let timerIntervalId = null;
 function stopTicking() {
     clearInterval(timerIntervalId);
     timerIntervalId = null;
+}
+
+function switchMode(newMode) {
+    stopTicking();
+    currentMode = newMode;
+    timerStatus = "idle";
+    remainingMilliseconds = MODES[currentMode].durationMs;
+    timerEndsAt = null;
+    render();
 }
 
 function tick() {
@@ -80,11 +89,7 @@ function handleStartPause() {
 
 function handleReset() {
     console.log("Reset clicked");
-    stopTicking();
-    timerStatus = "idle";
-    remainingMilliseconds = MODES[currentMode].durationMs;
-    timerEndsAt = null;
-    render();
+    switchMode(currentMode);
 }
 
 function handleVisibilityChange() {
@@ -107,8 +112,8 @@ function formatTime(totalSeconds) {
 function render() {
     const remainingSeconds = Math.ceil(remainingMilliseconds / 1000);
     const formattedTime = formatTime(remainingSeconds);
-    const isPaused = timerStatus === "paused"
-    const isFinished = timerStatus === "finished"
+    const isPaused = timerStatus === "paused";
+    const isFinished = timerStatus === "finished";
 
     timerElement.classList.toggle("is-paused", isPaused);
     timerElement.classList.toggle("is-finished", isFinished);
