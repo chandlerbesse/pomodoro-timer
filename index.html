@@ -16,13 +16,13 @@
 
             <div class="control-panel">
 
-                <div class="mode-selector">
-                    <button type="button" id="prev-mode-btn">&lt;</button>
+                <div role="group" class="mode-selector" aria-label="Mode">
+                    <button type="button" id="prev-mode-btn" aria-label="Previous mode">&lt;</button>
                     <div class="mode-display panel-background">
-                        <p id="mode">Focus</p>
+                        <p id="mode" aria-live="polite">Focus</p>
                         <p id="cycle-dots"></p>
                     </div>
-                    <button type="button" id="next-mode-btn">&gt;</button>
+                    <button type="button" id="next-mode-btn" aria-label="Next mode">&gt;</button>
                 </div>
                 
                 <div class="toolbar">
