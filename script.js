@@ -3,9 +3,9 @@ console.log("hello from script.js");
 // === Constants: ===
 const MODE_ORDER = ["focus", "short-break", "long-break"];
 const MODES = {
-    focus: { label: "Focus", durationMs: 5 * 1000 },
-    "short-break": { label: "Short Break", durationMs: 3 * 1000 },
-    "long-break": { label: "Long Break", durationMs: 10 * 1000 },
+    focus: { label: "Focus", durationMs: 25 * 60 * 1000 },
+    "short-break": { label: "Short Break", durationMs: 5 * 60 * 1000 },
+    "long-break": { label: "Long Break", durationMs: 15 * 60 * 1000 },
 };
 const SESSIONS_PER_CYCLE = 4;
 
@@ -65,7 +65,6 @@ function tick() {
         const prevMode = currentMode;
         switchMode(nextModeInCycle(currentMode, finishedFocusCount));  // load the next mode (not started)
         finishedSessionMode = prevMode;
-        // console.log(focusCount)  // TEMP for debugging
     }
 
     render();
@@ -170,7 +169,8 @@ function render() {
     const isPaused = timerStatus === "paused";
     const justFinished = finishedSessionMode !== null;
     const numFilledDots = Math.min(finishedFocusCount, SESSIONS_PER_CYCLE);
-    const numEmptyDots = SESSIONS_PER_CYCLE - numFilledDots;
+    const numCurrentDots = numFilledDots < SESSIONS_PER_CYCLE ? 1 : 0; 
+    const numEmptyDots = SESSIONS_PER_CYCLE - numFilledDots - numCurrentDots;
     const hideDots = currentMode !== "focus";
 
     timerElement.classList.toggle("is-paused", isPaused);
@@ -180,8 +180,9 @@ function render() {
     timerElement.textContent = formattedTime;
     modeElement.textContent = MODES[currentMode].label;
     document.body.dataset.mode = currentMode;  // for per-mode CSS (themes)
+    cycleDotsElement.setAttribute("aria-label", `${numFilledDots} of ${SESSIONS_PER_CYCLE} focus sessions done`)
 
-    cycleDotsElement.textContent = "●".repeat(numFilledDots) + "○".repeat(numEmptyDots);
+    cycleDotsElement.textContent = "●".repeat(numFilledDots) + "◐".repeat(numCurrentDots) + "○".repeat(numEmptyDots);
     
     if (justFinished) {
         endMessageElement.textContent = `Finished ${MODES[finishedSessionMode].label} session; mode changed to "${MODES[currentMode].label}"`;
