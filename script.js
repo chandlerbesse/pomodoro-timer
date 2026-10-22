@@ -7,6 +7,7 @@ const MODES = {
     "short-break": { label: "Short Break", durationMs: 3 * 1000 },
     "long-break": { label: "Long Break", durationMs: 10 * 1000 },
 };
+const SESSIONS_PER_CYCLE = 4;
 
 // === Element lookups: ===
 const timerElement = document.querySelector("#timer");      // Finds by id, class, element type, or combination
@@ -21,6 +22,7 @@ const endMessageElement = document.querySelector("#session-message");
 // const timerElement = document.getElementById("timer");   // Older, faster, only finds by ID
 
 // === State: ===
+let finishedFocusCount = 0;
 let currentMode = "focus";
 let remainingMilliseconds = MODES[currentMode].durationMs;
 let timerEndsAt = null;
@@ -54,9 +56,15 @@ function tick() {
 
     remainingMilliseconds = timerEndsAt - Date.now();
     if (remainingMilliseconds <= 0) {
+        if (currentMode === "focus") {
+            finishedFocusCount += 1;
+        } else if (currentMode === "long-break") {
+            finishedFocusCount = 0;
+        }
         const prevMode = currentMode;
-        switchMode(nextModeInCycle(currentMode));  // load the next mode (not started)
+        switchMode(nextModeInCycle(currentMode, finishedFocusCount));  // load the next mode (not started)
         finishedSessionMode = prevMode;
+        // console.log(focusCount)  // TEMP for debugging
     }
 
     render();
@@ -123,11 +131,13 @@ function formatTime(totalSeconds) {
     return `${paddedMinutes}:${paddedSeconds}`;
 }
 
-function nextModeInCycle(modeId) {
+function nextModeInCycle(modeId, count) {
     if (modeId === "focus") {
+        if (count >= SESSIONS_PER_CYCLE) {
+            return "long-break";
+        }
         return "short-break";
     }
-
     return "focus";
 }
 
