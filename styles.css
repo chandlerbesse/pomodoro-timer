@@ -102,9 +102,12 @@ main {
     }
 }
 
-#timer.is-paused,
-#timer.is-finished {
-    animation: blink 1.5s step-end infinite;
+#timer.is-paused {
+    animation: blink 1.25s step-end infinite;
+}
+
+#mode.just-finished {
+    animation: blink 1.25s step-end 4;
 }
 
 #mode,

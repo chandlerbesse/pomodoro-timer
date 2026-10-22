@@ -25,6 +25,7 @@ let remainingMilliseconds = MODES[currentMode].durationMs;
 let timerEndsAt = null;
 let timerStatus = "idle";
 let timerIntervalId = null;
+let justFinished = false;
 
 // let prevTick = null // TEMP for testing
 
@@ -40,6 +41,7 @@ function switchMode(newMode) {
     timerStatus = "idle";
     remainingMilliseconds = MODES[currentMode].durationMs;
     timerEndsAt = null;
+    justFinished = false;
     render();
 }
 
@@ -51,10 +53,10 @@ function tick() {
 
     remainingMilliseconds = timerEndsAt - Date.now();
     if (remainingMilliseconds <= 0) {
-        stopTicking();
-        timerStatus = "finished";
-        remainingMilliseconds = 0;  // Protects formatTime() from negative values
+        switchMode(nextModeInCycle(currentMode));  // load the next mode (not started)
+        justFinished = true;
     }
+
     render();
 }
 
@@ -66,6 +68,7 @@ function startTimer() {
     console.log("Start clicked");
     timerIntervalId = setInterval(tick, 1000);
     timerStatus = "running";
+    justFinished = false;
     render();
 }
 
@@ -118,6 +121,14 @@ function formatTime(totalSeconds) {
     return `${paddedMinutes}:${paddedSeconds}`;
 }
 
+function nextModeInCycle(modeId) {
+    if (modeId === "focus") {
+        return "short-break";
+    }
+
+    return "focus";
+}
+
 function changeModeBy(step) {
     const isActive = timerStatus === "running" || timerStatus === "paused";
 
@@ -144,23 +155,19 @@ function render() {
     const remainingSeconds = Math.ceil(remainingMilliseconds / 1000);
     const formattedTime = formatTime(remainingSeconds);
     const isPaused = timerStatus === "paused";
-    const isFinished = timerStatus === "finished";
 
     timerElement.classList.toggle("is-paused", isPaused);
-    timerElement.classList.toggle("is-finished", isFinished);
+    modeElement.classList.toggle("just-finished", justFinished);
 
     timerElement.textContent = formattedTime;
     modeElement.textContent = MODES[currentMode].label;
     document.body.dataset.mode = currentMode;  // for per-mode CSS (themes)
-    startPauseButton.disabled = isFinished;  // Disables "Start" button once timer hits 00:00
 
     // Tab Title:
     if (timerStatus === "running") {
         document.title = `Running: ${formattedTime}`;
     } else if (isPaused) {
         document.title = `Paused: ${formattedTime}`;
-    } else if (isFinished) {
-        document.title = `Finished: ${formattedTime}`;
     } else {
         document.title = "Pomodoro Timer";
     }
