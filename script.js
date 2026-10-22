@@ -174,9 +174,11 @@ function render() {
 
     // Tab Title:
     if (timerStatus === "running") {
-        document.title = `Running: ${formattedTime}`;
+        document.title = `${MODES[currentMode].label}: ${formattedTime}`;
     } else if (isPaused) {
-        document.title = `Paused: ${formattedTime}`;
+        document.title = `⏸ ${MODES[currentMode].label}: ${formattedTime}`;
+    } else if (justFinished) {
+        document.title = `${MODES[finishedSessionMode].label}: FINISHED`;
     } else {
         document.title = "Pomodoro Timer";
     }
