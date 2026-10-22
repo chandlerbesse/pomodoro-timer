@@ -3,9 +3,9 @@ console.log("hello from script.js");
 // === Constants: ===
 const MODE_ORDER = ["focus", "short-break", "long-break"];
 const MODES = {
-    focus: { label: "Focus", durationMs: 25 * 60 * 1000 },
-    "short-break": { label: "Short Break", durationMs: 5 * 60 * 1000 },
-    "long-break": { label: "Long Break", durationMs: 15 * 60 * 1000 },
+    focus: { label: "Focus", durationMs: 5 * 1000 },
+    "short-break": { label: "Short Break", durationMs: 3 * 1000 },
+    "long-break": { label: "Long Break", durationMs: 10 * 1000 },
 };
 
 // === Element lookups: ===
@@ -15,6 +15,7 @@ const startPauseButton = document.querySelector("#start-pause-btn");
 const resetButton = document.querySelector("#reset-btn");
 const prevModeButton = document.querySelector("#prev-mode-btn");
 const nextModeButton = document.querySelector("#next-mode-btn");
+const endMessageElement = document.querySelector("#session-message");
 
 // Alternative: getElementById()
 // const timerElement = document.getElementById("timer");   // Older, faster, only finds by ID
@@ -25,7 +26,7 @@ let remainingMilliseconds = MODES[currentMode].durationMs;
 let timerEndsAt = null;
 let timerStatus = "idle";
 let timerIntervalId = null;
-let justFinished = false;
+let finishedSessionMode = null;
 
 // let prevTick = null // TEMP for testing
 
@@ -41,7 +42,7 @@ function switchMode(newMode) {
     timerStatus = "idle";
     remainingMilliseconds = MODES[currentMode].durationMs;
     timerEndsAt = null;
-    justFinished = false;
+    finishedSessionMode = null;
     render();
 }
 
@@ -53,8 +54,9 @@ function tick() {
 
     remainingMilliseconds = timerEndsAt - Date.now();
     if (remainingMilliseconds <= 0) {
+        const prevMode = currentMode;
         switchMode(nextModeInCycle(currentMode));  // load the next mode (not started)
-        justFinished = true;
+        finishedSessionMode = prevMode;
     }
 
     render();
@@ -68,7 +70,7 @@ function startTimer() {
     console.log("Start clicked");
     timerIntervalId = setInterval(tick, 1000);
     timerStatus = "running";
-    justFinished = false;
+    finishedSessionMode = null;
     render();
 }
 
@@ -155,6 +157,7 @@ function render() {
     const remainingSeconds = Math.ceil(remainingMilliseconds / 1000);
     const formattedTime = formatTime(remainingSeconds);
     const isPaused = timerStatus === "paused";
+    const justFinished = finishedSessionMode !== null;
 
     timerElement.classList.toggle("is-paused", isPaused);
     modeElement.classList.toggle("just-finished", justFinished);
@@ -162,6 +165,12 @@ function render() {
     timerElement.textContent = formattedTime;
     modeElement.textContent = MODES[currentMode].label;
     document.body.dataset.mode = currentMode;  // for per-mode CSS (themes)
+
+    if (justFinished) {
+        endMessageElement.textContent = `Finished ${MODES[finishedSessionMode].label} session; mode changed to "${MODES[currentMode].label}"`;
+    } else {
+        endMessageElement.textContent = "";
+    }
 
     // Tab Title:
     if (timerStatus === "running") {

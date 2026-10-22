@@ -116,6 +116,11 @@ main {
     margin: 0;  /* Removing default margin from browser */
 }
 
+#session-message {
+    /* Box (size & spacing): */
+    min-height: 1lh;  /* lh = one line of text at the element's font size and line height */
+}
+
 /* === Buttons: === */
 button {
     /* Box (size & spacing): */
