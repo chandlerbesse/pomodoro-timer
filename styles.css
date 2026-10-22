@@ -77,6 +77,7 @@ main {
     /* Box (size & spacing): */
     padding: 15px 0;  /* below .panel-background so this padding wins*/
     width: 13ch;
+    min-height: 2lh;  /* maintains a fixed height so breaks are centered when cycle dots are hidden */
 
     /* Typography: */
     text-align: center;  /* Typography bc it positions text inside a box, not boxes */
@@ -114,6 +115,10 @@ main {
 #cycle-dots {
     /* Box (size & spacing): */
     margin: 0;  /* Removing default margin from browser */
+}
+
+#cycle-dots.hide-dots {
+    display: none;
 }
 
 #session-message {

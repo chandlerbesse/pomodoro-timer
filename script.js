@@ -17,6 +17,7 @@ const resetButton = document.querySelector("#reset-btn");
 const prevModeButton = document.querySelector("#prev-mode-btn");
 const nextModeButton = document.querySelector("#next-mode-btn");
 const endMessageElement = document.querySelector("#session-message");
+const cycleDotsElement = document.querySelector("#cycle-dots");
 
 // Alternative: getElementById()
 // const timerElement = document.getElementById("timer");   // Older, faster, only finds by ID
@@ -168,14 +169,20 @@ function render() {
     const formattedTime = formatTime(remainingSeconds);
     const isPaused = timerStatus === "paused";
     const justFinished = finishedSessionMode !== null;
+    const numFilledDots = Math.min(finishedFocusCount, SESSIONS_PER_CYCLE);
+    const numEmptyDots = SESSIONS_PER_CYCLE - numFilledDots;
+    const hideDots = currentMode !== "focus";
 
     timerElement.classList.toggle("is-paused", isPaused);
     modeElement.classList.toggle("just-finished", justFinished);
+    cycleDotsElement.classList.toggle("hide-dots", hideDots);
 
     timerElement.textContent = formattedTime;
     modeElement.textContent = MODES[currentMode].label;
     document.body.dataset.mode = currentMode;  // for per-mode CSS (themes)
 
+    cycleDotsElement.textContent = "●".repeat(numFilledDots) + "○".repeat(numEmptyDots);
+    
     if (justFinished) {
         endMessageElement.textContent = `Finished ${MODES[finishedSessionMode].label} session; mode changed to "${MODES[currentMode].label}"`;
     } else {
