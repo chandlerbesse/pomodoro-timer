@@ -15,8 +15,16 @@
             <p id="timer" class="panel-background">25:00</p>
 
             <div class="control-panel">
-                <p id="mode" class="panel-background">Work</p>
 
+                <div role="group" class="mode-selector" aria-label="Mode">
+                    <button type="button" id="prev-mode-btn" aria-label="Previous mode">&lt;</button>
+                    <div class="mode-display panel-background">
+                        <p id="mode" aria-live="polite">Focus</p>
+                        <p role="img" id="cycle-dots"></p>
+                    </div>
+                    <button type="button" id="next-mode-btn" aria-label="Next mode">&gt;</button>
+                </div>
+                
                 <div class="toolbar">
                     <button type="button" id="start-pause-btn">Start</button>
                     <button type="button" id="reset-btn">Reset</button>
@@ -25,6 +33,8 @@
             </div>
 
         </div>
+
+        <p id="session-message" aria-live="polite"></p>
 
     </main>
 </body>

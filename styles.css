@@ -14,8 +14,8 @@ body {
     font-family: Georgia, 'Times New Roman', Times, serif;
     
     /* Color: */
-    background-color: gray;
-    color: yellow; /* Changes text color */
+    background-color: hsl(0, 0%, 20%);
+    color: hsl(120, 90%, 60%); /* Changes text color */
 }
 
 main {
@@ -34,6 +34,9 @@ main {
     display: flex;
     align-items: stretch;  /* Keeps timer aligned with control-panel */
     gap: 15px;
+
+    /* Color: */
+    text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);  /* Creates a glow effect on timer and mode */
 }
 
 .control-panel {
@@ -42,6 +45,11 @@ main {
     flex-direction: column;
     justify-content: space-between;  /* Keeps buttons aligned w/ bottom of timer */
     gap: 15px;      /* space BETWEEN items, not before the first or after the last */
+}
+
+.mode-selector {
+    display: flex;
+    flex-direction: row;
 }
 
 .toolbar {
@@ -60,41 +68,69 @@ main {
     background-color: rgba(0, 0, 0, 0.5);
 }
 
+.mode-display {
+    /* Layout: */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    /* Box (size & spacing): */
+    padding: 15px 0;  /* below .panel-background so this padding wins*/
+    width: 13ch;
+    min-height: 2lh;  /* maintains a fixed height so breaks are centered when cycle dots are hidden */
+
+    /* Typography: */
+    text-align: center;  /* Typography bc it positions text inside a box, not boxes */
+    font-size: 1.5rem;
+}
+
 /* === Timer Display: === */
-/* #timer and #mode share the information from .panel-background */
+/* .mode-display and #timer share the information from .panel-background */
 #timer {
     /* Layout: */
     display: flex;
     align-items: center;
 
     /* Typography: */
-    font-size: 6rem;
+    font-size: 6.5rem;
     font-variant-numeric: lining-nums tabular-nums;
 }
 
 @keyframes blink {
-    50% {color: transparent; } /* Makes text invisible */
+    50% {
+        color: transparent; /* Makes text invisible */
+        text-shadow: none;  /* Hides glow */
+    }
 }
 
-#timer.is-paused,
-#timer.is-finished {
-    animation: blink 1.5s step-end infinite;
+#timer.is-paused {
+    animation: blink 1.25s step-end infinite;
 }
 
-#mode {
+#mode.just-finished {
+    animation: blink 1.25s step-end 4;
+}
+
+#mode,
+#cycle-dots {
     /* Box (size & spacing): */
-    min-width: 9ch;
+    margin: 0;  /* Removing default margin from browser */
+}
 
-    /* Typography: */
-    font-size: 1.5rem;
-    text-align: center;  /* Typography bc it positions text inside a box, not boxes */
+#cycle-dots.hide-dots {
+    display: none;
+}
+
+#session-message {
+    /* Box (size & spacing): */
+    min-height: 1lh;  /* lh = one line of text at the element's font size and line height */
 }
 
 /* === Buttons: === */
 button {
     /* Box (size & spacing): */
     padding: 5px 15px;
-    border: 1px solid black;
+    border: 1px solid rgba(0, 0, 0, 0.5);
     border-radius: 10px;        /* Rounds the corners of the buttons */
 
     /* Typography: */
@@ -114,10 +150,37 @@ button:disabled {
 
 #start-pause-btn {
     /* Color: */
-    background-color: rgb(52, 226, 52);
+    color: hsl(0, 0%, 10%);
+    background-color: hsl(120, 90%, 60%);
 }
 
 #reset-btn {
     /* Color: */
-    background-color: rgb(255, 54, 54);
+    color: hsl(0, 0%, 0%);
+    background-color: hsl(0, 85%, 55%);
 }
+
+#prev-mode-btn,
+#next-mode-btn {
+    /* Box (size & spacing): */
+    min-width: 44px;
+    border-radius: 0;
+
+    /* Color: */
+    background-color: rgba(255, 255, 255, 0.07);
+    color: hsl(120, 90%, 60%);
+}
+
+/* === Mode Themes: === */
+/* Uncomment if background changes for each mode */
+/* body[data-mode="focus"] {
+    background-color: hsl(0, 0%, 20%);
+}
+
+body[data-mode="short-break"] {
+    background-color: hsl(0, 0%, 20%);
+}
+
+body[data-mode="long-break"] {
+    background-color: hsl(0, 0%, 20%);
+} */
