@@ -39,6 +39,18 @@ main {
     text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);  /* Creates a glow effect on timer and mode */
 }
 
+.adjustable-timer {
+    /* Layout: */
+    display: flex;
+    flex-direction: row;
+}
+
+.time-adjuster {
+    /* Layout: */
+    display: flex;
+    flex-direction: column;
+}
+
 .control-panel {
     /* Layout: */
     display: flex;
@@ -73,6 +85,7 @@ main {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    flex-grow: 1;
 
     /* Box (size & spacing): */
     padding: 15px 0;  /* below .panel-background so this padding wins*/
@@ -172,6 +185,11 @@ button:disabled {
     /* Color: */
     background-color: rgba(255, 255, 255, 0.07);
     color: hsl(120, 90%, 60%);
+}
+
+.time-adjust-btn {
+    /* Layout: */
+    flex-grow: 1;
 }
 
 /* === Mode Themes: === */
