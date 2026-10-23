@@ -140,7 +140,11 @@ button {
     cursor: pointer;            /* Turns mouse into finger when hovering over button*/
 }
 
-button:disabled {
+/* Specificity = (ids, classes, types), counting each kind in the selector.
+   button:disabled = (0, 1, 1): :disabled counts as a class, button as a type.
+   It beats any single class (0, 1, 0), so it works on every button style.
+   It loses to an #id rule (1, 0, 0), so don't style buttons by id. */
+button:disabled { 
     /* Color: */
     opacity: 0.5;
 
@@ -148,20 +152,19 @@ button:disabled {
     cursor: not-allowed;
 }
 
-#start-pause-btn {
+.primary-btn {
     /* Color: */
     color: hsl(0, 0%, 10%);
     background-color: hsl(120, 90%, 60%);
 }
 
-#reset-btn {
+.danger-btn {
     /* Color: */
     color: hsl(0, 0%, 0%);
     background-color: hsl(0, 85%, 55%);
 }
 
-#prev-mode-btn,
-#next-mode-btn {
+.stepper-btn {
     /* Box (size & spacing): */
     min-width: 44px;
     border-radius: 0;
