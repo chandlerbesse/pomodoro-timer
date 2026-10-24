@@ -202,7 +202,12 @@ function startHold(event, sign, button) {
         return;  // skip if not mouse/touch
     }
 
-    stopHold();  // end any hold still running (e.g. a second finger on a touchscreen), so its timers aren't lost
+    // end any hold still running (e.g. a second finger on a touchscreen), so its timers aren't lost
+    stopHold();
+
+    // holding then dragging off button will continue to repeat until released
+    button.setPointerCapture(event.pointerId);
+    
     holdDelayId = setTimeout(() => {
         holdRepeatId = setInterval(() => {
             changeTimeBy(sign);
