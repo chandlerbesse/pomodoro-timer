@@ -11,6 +11,8 @@ const SESSIONS_PER_CYCLE = 4;
 const MAX_DURATION_MS = 60 * 60 * 1000;
 const MIN_DURATION_MS = 1 * 60 * 1000;
 const ADJUST_STEP_MS = 1 * 60 * 1000;
+const HOLD_DELAY_MS = 500;
+const HOLD_REPEAT_MS = 125;
 
 // === Element lookups: ===
 const timerElement = document.querySelector("#timer");      // Finds by id, class, element type, or combination
@@ -37,6 +39,8 @@ let timerEndsAt = null;
 let timerStatus = "idle";
 let timerIntervalId = null;
 let finishedSessionMode = null;
+let holdDelayId = null;
+let holdRepeatId = null;
 
 // let prevTick = null // TEMP for testing
 
@@ -184,11 +188,46 @@ function changeTimeBy(sign) {
     render();
 }
 
-function handleAddTime() {
+function stopHold() {
+    clearInterval(holdRepeatId);
+    clearTimeout(holdDelayId);
+    holdRepeatId = null;
+    holdDelayId = null;
+}
+
+function startHold(sign, button) {
+    stopHold();  // end any hold still running (e.g. a second finger on a touchscreen), so its timers aren't lost
+    holdDelayId = setTimeout(() => {
+        holdRepeatId = setInterval(() => {
+            changeTimeBy(sign);
+            if (button.disabled) {
+                stopHold();
+            }
+        }, HOLD_REPEAT_MS);
+    }, HOLD_DELAY_MS);
+
+    changeTimeBy(sign);
+}
+
+function handleAddPress() {
+    startHold(1, addMinuteButton);
+}
+
+function handleSubtractPress() {
+    startHold(-1, subtractMinuteButton);
+}
+
+function handleAddClick(event) {
+    if (event.detail !== 0) {
+        return;
+    }
     changeTimeBy(1);
 }
 
-function handleSubtractTime() {
+function handleSubtractClick(event) {
+    if (event.detail !== 0) {
+        return;
+    }
     changeTimeBy(-1);
 }
 
@@ -249,13 +288,28 @@ function render() {
 }
 
 // === Event listeners: ===
+// Page:
+document.addEventListener("visibilitychange", handleVisibilityChange);
+
+// Control:
 startPauseButton.addEventListener("click", handleStartPause);
 resetButton.addEventListener("click", handleReset);
-document.addEventListener("visibilitychange", handleVisibilityChange);
+
+// Mode:
 prevModeButton.addEventListener("click", handlePrevMode);
 nextModeButton.addEventListener("click", handleNextMode);
-addMinuteButton.addEventListener("click", handleAddTime);
-subtractMinuteButton.addEventListener("click", handleSubtractTime);
+
+// Add time:
+addMinuteButton.addEventListener("click", handleAddClick);                  // Keyboard behavior
+addMinuteButton.addEventListener("pointerdown", handleAddPress);            // Mouse or finger behavior
+addMinuteButton.addEventListener("pointerup", stopHold);            
+addMinuteButton.addEventListener("pointercancel", stopHold);
+
+// Subtract time:
+subtractMinuteButton.addEventListener("click", handleSubtractClick);        // Keyboard behavior
+subtractMinuteButton.addEventListener("pointerdown", handleSubtractPress);  // Mouse or finger behavior
+subtractMinuteButton.addEventListener("pointerup", stopHold);
+subtractMinuteButton.addEventListener("pointercancel", stopHold);
 
 // === Startup: ===
 render();
