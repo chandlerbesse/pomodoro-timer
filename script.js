@@ -201,6 +201,9 @@ function render() {
     const numCurrentDots = numFilledDots < SESSIONS_PER_CYCLE ? 1 : 0; 
     const numEmptyDots = SESSIONS_PER_CYCLE - numFilledDots - numCurrentDots;
     const hideDots = currentMode !== "focus";
+    const isIdle = timerStatus === "idle";
+    const isAtMaxDuration = remainingMilliseconds >= MAX_DURATION_MS;
+    const isAtMinDuration = remainingMilliseconds <= MIN_DURATION_MS;
 
     timerElement.classList.toggle("is-paused", isPaused);
     modeElement.classList.toggle("just-finished", justFinished);
@@ -236,6 +239,10 @@ function render() {
     } else {
         startPauseButton.textContent = "Start";
     }
+
+    // Button States:
+    addMinuteButton.disabled = !isIdle || isAtMaxDuration;
+    subtractMinuteButton.disabled = !isIdle || isAtMinDuration;
 }
 
 // === Event listeners: ===

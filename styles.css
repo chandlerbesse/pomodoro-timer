@@ -160,6 +160,7 @@ button {
 button:disabled { 
     /* Color: */
     opacity: 0.5;
+    filter: grayscale(1);
 
     /* Interaction: */
     cursor: not-allowed;
