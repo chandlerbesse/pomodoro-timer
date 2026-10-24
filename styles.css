@@ -88,13 +88,14 @@ main {
     flex-grow: 1;
 
     /* Box (size & spacing): */
-    padding: 15px 0;  /* below .panel-background so this padding wins*/
+    padding: 3px 0;  /* below .panel-background so this padding wins*/
     width: 13ch;
     min-height: 2lh;  /* maintains a fixed height so breaks are centered when cycle dots are hidden */
 
     /* Typography: */
     text-align: center;  /* Typography bc it positions text inside a box, not boxes */
     font-size: 1.5rem;
+    line-height: 1.1;
 }
 
 /* === Timer Display: === */
@@ -103,6 +104,10 @@ main {
     /* Layout: */
     display: flex;
     align-items: center;
+    justify-content: flex-start;  /* start, not center: a 7 would shift the digits */
+
+    /* Box (size & spacing): */
+    width: 4.2ch;
 
     /* Typography: */
     font-size: 6.5rem;
@@ -128,6 +133,11 @@ main {
 #cycle-dots {
     /* Box (size & spacing): */
     margin: 0;  /* Removing default margin from browser */
+}
+
+#cycle-dots {
+    /* Typography: */
+    font-size: 1rem;
 }
 
 #cycle-dots.hide-dots {
