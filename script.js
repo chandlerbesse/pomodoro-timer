@@ -8,14 +8,21 @@ const MODES = {
     "long-break": { label: "Long Break", durationMs: 15 * 60 * 1000 },
 };
 const SESSIONS_PER_CYCLE = 4;
+const MAX_DURATION_MS = 60 * 60 * 1000;
+const MIN_DURATION_MS = 1 * 60 * 1000;
+const ADJUST_STEP_MS = 1 * 60 * 1000;
 
 // === Element lookups: ===
 const timerElement = document.querySelector("#timer");      // Finds by id, class, element type, or combination
 const modeElement = document.querySelector("#mode");
-const startPauseButton = document.querySelector("#start-pause-btn");
-const resetButton = document.querySelector("#reset-btn");
+
+const addMinuteButton = document.querySelector("#add-minute-btn");
+const subtractMinuteButton = document.querySelector("#subtract-minute-btn");
 const prevModeButton = document.querySelector("#prev-mode-btn");
 const nextModeButton = document.querySelector("#next-mode-btn");
+const startPauseButton = document.querySelector("#start-pause-btn");
+const resetButton = document.querySelector("#reset-btn");
+
 const endMessageElement = document.querySelector("#session-message");
 const cycleDotsElement = document.querySelector("#cycle-dots");
 
@@ -163,6 +170,28 @@ function handlePrevMode() {
     changeModeBy(-1);
 }
 
+function changeTimeBy(sign) {
+    if (timerStatus !== "idle") {
+        return;
+    }
+
+    const adjustedTime = remainingMilliseconds + sign * ADJUST_STEP_MS;
+    remainingMilliseconds = Math.max(MIN_DURATION_MS, Math.min(MAX_DURATION_MS, adjustedTime));  // clamp: keep the new time between MIN and MAX durations
+
+    // Alternatively:
+    // remainingMilliseconds = Math.min(MAX_DURATION_MS, Math.max(MIN_DURATION_MS, adjustedTime))
+    
+    render();
+}
+
+function handleAddTime() {
+    changeTimeBy(1);
+}
+
+function handleSubtractTime() {
+    changeTimeBy(-1);
+}
+
 function render() {
     const remainingSeconds = Math.ceil(remainingMilliseconds / 1000);
     const formattedTime = formatTime(remainingSeconds);
@@ -172,23 +201,29 @@ function render() {
     const numCurrentDots = numFilledDots < SESSIONS_PER_CYCLE ? 1 : 0; 
     const numEmptyDots = SESSIONS_PER_CYCLE - numFilledDots - numCurrentDots;
     const hideDots = currentMode !== "focus";
-
+    const isIdle = timerStatus === "idle";
+    const isAtMaxDuration = remainingMilliseconds >= MAX_DURATION_MS;
+    const isAtMinDuration = remainingMilliseconds <= MIN_DURATION_MS;
+    const modeLabel = MODES[currentMode].label;
+    const sessionMessage = justFinished ? `Finished ${MODES[finishedSessionMode].label} session; mode changed to "${MODES[currentMode].label}"` : "";
+    
     timerElement.classList.toggle("is-paused", isPaused);
     modeElement.classList.toggle("just-finished", justFinished);
     cycleDotsElement.classList.toggle("hide-dots", hideDots);
 
     timerElement.textContent = formattedTime;
-    modeElement.textContent = MODES[currentMode].label;
+    // Only write when changed: #mode and #session are aria-live, and rewriting the same text re-announces it over and over again
+    if (modeElement.textContent !== modeLabel) {
+        modeElement.textContent = modeLabel;
+    }
+    if (endMessageElement.textContent !== sessionMessage) {
+        endMessageElement.textContent = sessionMessage;
+    }
+
     document.body.dataset.mode = currentMode;  // for per-mode CSS (themes)
-    cycleDotsElement.setAttribute("aria-label", `${numFilledDots} of ${SESSIONS_PER_CYCLE} focus sessions done`)
+    cycleDotsElement.setAttribute("aria-label", `${numFilledDots} of ${SESSIONS_PER_CYCLE} focus sessions done`);
 
     cycleDotsElement.textContent = "●".repeat(numFilledDots) + "◐".repeat(numCurrentDots) + "○".repeat(numEmptyDots);
-    
-    if (justFinished) {
-        endMessageElement.textContent = `Finished ${MODES[finishedSessionMode].label} session; mode changed to "${MODES[currentMode].label}"`;
-    } else {
-        endMessageElement.textContent = "";
-    }
 
     // Tab Title:
     if (timerStatus === "running") {
@@ -207,6 +242,10 @@ function render() {
     } else {
         startPauseButton.textContent = "Start";
     }
+
+    // Button States:
+    addMinuteButton.disabled = !isIdle || isAtMaxDuration;
+    subtractMinuteButton.disabled = !isIdle || isAtMinDuration;
 }
 
 // === Event listeners: ===
@@ -215,6 +254,8 @@ resetButton.addEventListener("click", handleReset);
 document.addEventListener("visibilitychange", handleVisibilityChange);
 prevModeButton.addEventListener("click", handlePrevMode);
 nextModeButton.addEventListener("click", handleNextMode);
+addMinuteButton.addEventListener("click", handleAddTime);
+subtractMinuteButton.addEventListener("click", handleSubtractTime);
 
 // === Startup: ===
 render();
