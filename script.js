@@ -204,23 +204,26 @@ function render() {
     const isIdle = timerStatus === "idle";
     const isAtMaxDuration = remainingMilliseconds >= MAX_DURATION_MS;
     const isAtMinDuration = remainingMilliseconds <= MIN_DURATION_MS;
-
+    const modeLabel = MODES[currentMode].label;
+    const sessionMessage = justFinished ? `Finished ${MODES[finishedSessionMode].label} session; mode changed to "${MODES[currentMode].label}"` : "";
+    
     timerElement.classList.toggle("is-paused", isPaused);
     modeElement.classList.toggle("just-finished", justFinished);
     cycleDotsElement.classList.toggle("hide-dots", hideDots);
 
     timerElement.textContent = formattedTime;
-    modeElement.textContent = MODES[currentMode].label;
+    // Only write when changed: #mode and #session are aria-live, and rewriting the same text re-announces it over and over again
+    if (modeElement.textContent !== modeLabel) {
+        modeElement.textContent = modeLabel;
+    }
+    if (endMessageElement.textContent !== sessionMessage) {
+        endMessageElement.textContent = sessionMessage;
+    }
+
     document.body.dataset.mode = currentMode;  // for per-mode CSS (themes)
-    cycleDotsElement.setAttribute("aria-label", `${numFilledDots} of ${SESSIONS_PER_CYCLE} focus sessions done`)
+    cycleDotsElement.setAttribute("aria-label", `${numFilledDots} of ${SESSIONS_PER_CYCLE} focus sessions done`);
 
     cycleDotsElement.textContent = "●".repeat(numFilledDots) + "◐".repeat(numCurrentDots) + "○".repeat(numEmptyDots);
-    
-    if (justFinished) {
-        endMessageElement.textContent = `Finished ${MODES[finishedSessionMode].label} session; mode changed to "${MODES[currentMode].label}"`;
-    } else {
-        endMessageElement.textContent = "";
-    }
 
     // Tab Title:
     if (timerStatus === "running") {
