@@ -195,7 +195,13 @@ function stopHold() {
     holdDelayId = null;
 }
 
-function startHold(sign, button) {
+function startHold(event, sign, button) {
+    // pointerdown: event.button identifies which button was pressed; 
+    // 0 = main (left-click or finger), 1 = middle, 2 = right
+    if (event.button !== 0) {
+        return;  // skip if not mouse/touch
+    }
+
     stopHold();  // end any hold still running (e.g. a second finger on a touchscreen), so its timers aren't lost
     holdDelayId = setTimeout(() => {
         holdRepeatId = setInterval(() => {
@@ -209,24 +215,26 @@ function startHold(sign, button) {
     changeTimeBy(sign);
 }
 
-function handleAddPress() {
-    startHold(1, addMinuteButton);
+function handleAddPress(event) {
+    startHold(event, 1, addMinuteButton);
 }
 
-function handleSubtractPress() {
-    startHold(-1, subtractMinuteButton);
+function handleSubtractPress(event) {
+    startHold(event, -1, subtractMinuteButton);
 }
 
 function handleAddClick(event) {
+    // click: event.detail is the click count; 0 = keyboard (Enter/Space), 1+ = mouse/touch
     if (event.detail !== 0) {
-        return;
+        return;  // mouse/touch already stepped on pointerdown (startHold), so skip to avoid a double step
     }
     changeTimeBy(1);
 }
 
 function handleSubtractClick(event) {
+    // click: event.detail is the click count; 0 = keyboard (Enter/Space), 1+ = mouse/touch
     if (event.detail !== 0) {
-        return;
+        return;  // mouse/touch already stepped on pointerdown (startHold), so skip to avoid a double step
     }
     changeTimeBy(-1);
 }
